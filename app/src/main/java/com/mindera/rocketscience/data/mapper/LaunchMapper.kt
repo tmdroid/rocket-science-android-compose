@@ -2,7 +2,7 @@ package com.mindera.rocketscience.data.mapper
 
 import com.mindera.rocketscience.data.local.entity.LaunchEntity
 import com.mindera.rocketscience.data.remote.dto.LaunchDto
-import com.mindera.rocketscience.features.launches.Launch
+import com.mindera.rocketscience.domain.model.Launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
@@ -43,30 +43,41 @@ fun LaunchDto.toEntity(): LaunchEntity {
 }
 
 fun LaunchEntity.toDomainModel(): Launch {
+    val (formattedDate, formattedTime) = formatDateTime(launchDateUtc)
     return Launch(
         id = flightNumber.toString(),
-        name = missionName,
-        date = formatDate(launchDateUtc),
-        rocket = rocketName,
+        missionName = missionName,
+        launchDate = formattedDate,
+        launchTime = formattedTime,
+        launchDateUnix = launchDateUnix,
+        rocketName = rocketName,
+        rocketType = rocketType,
+        missionPatchUrl = missionPatchSmallUrl ?: missionPatchUrl,
         success = launchSuccess
     )
 }
 
-private fun formatDate(dateUtc: String): String {
+private fun formatDateTime(dateUtc: String): Pair<String, String> {
     return try {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val date = inputFormat.parse(dateUtc)
-        outputFormat.format(date ?: Date())
+        val formattedDate = dateFormat.format(date ?: Date())
+        val formattedTime = timeFormat.format(date ?: Date())
+        Pair(formattedDate, formattedTime)
     } catch (e: Exception) {
         try {
             // Try alternative format without milliseconds
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+            val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
             val date = inputFormat.parse(dateUtc)
-            outputFormat.format(date ?: Date())
+            val formattedDate = dateFormat.format(date ?: Date())
+            val formattedTime = timeFormat.format(date ?: Date())
+            Pair(formattedDate, formattedTime)
         } catch (e: Exception) {
-            dateUtc // Return original if parsing fails
+            Pair(dateUtc, "") // Return original if parsing fails
         }
     }
 }

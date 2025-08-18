@@ -4,7 +4,7 @@ import com.mindera.rocketscience.data.local.datasource.LocalDataSource
 import com.mindera.rocketscience.data.remote.datasource.RemoteDataSource
 import com.mindera.rocketscience.data.mapper.toDomainModel
 import com.mindera.rocketscience.data.mapper.toEntity
-import com.mindera.rocketscience.features.launches.Launch
+import com.mindera.rocketscience.domain.model.Launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -62,11 +62,12 @@ class LaunchesRepositoryImpl @Inject constructor(
 
     private suspend fun refreshFromRemote(): Result<Unit> {
         val remoteResult = remoteDataSource.getAllLaunches()
+
         return if (remoteResult.isSuccess) {
             try {
-                val launchEntities = remoteResult.getOrNull()?.map { launchDto ->
-                    launchDto.toEntity()
-                } ?: emptyList()
+                val launchEntities = remoteResult.getOrNull()
+                    ?.map { launchDto -> launchDto.toEntity() }
+                    ?: emptyList()
 
                 localDataSource.deleteAllLaunches()
                 localDataSource.insertLaunches(launchEntities)

@@ -2,7 +2,7 @@ package com.mindera.rocketscience.features.launches
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mindera.rocketscience.data.repository.LaunchesRepository
+import com.mindera.rocketscience.domain.usecase.GetLaunchesUseCase
 import com.mindera.rocketscience.di.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LaunchesViewModel @Inject constructor(
-    private val launchesRepository: LaunchesRepository,
+    private val getLaunchesUseCase: GetLaunchesUseCase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     
@@ -29,7 +29,7 @@ class LaunchesViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             
-            launchesRepository.getLaunches().collect { result ->
+            getLaunchesUseCase().collect { result ->
                 when {
                     result.isSuccess -> {
                         val launches = result.getOrNull() ?: emptyList()

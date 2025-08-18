@@ -3,14 +3,24 @@ package com.mindera.rocketscience.features.launches
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.mindera.rocketscience.domain.model.LaunchStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +100,7 @@ private fun ErrorContent(
 
 @Composable
 private fun LaunchesList(
-    launches: List<Launch>,
+    launches: List<LaunchUiModel>,
     modifier: Modifier = Modifier
 ) {
     if (launches.isEmpty()) {
@@ -104,13 +114,21 @@ private fun LaunchesList(
             )
         }
     } else {
-        LazyColumn(
-            modifier = modifier,
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(launches) { launch ->
-                LaunchItem(launch = launch)
+        Column(modifier = modifier) {
+            Text(
+                text = "Launches",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+            )
+            
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(launches) { launch ->
+                    LaunchItem(launch = launch)
+                }
             }
         }
     }
@@ -118,57 +136,86 @@ private fun LaunchesList(
 
 @Composable
 private fun LaunchItem(
-    launch: Launch,
+    launch: LaunchUiModel,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = launch.name,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
+            // Mission patch image
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(launch.missionPatchUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Mission patch for ${launch.name}",
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
             )
             
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.width(16.dp))
             
-            Text(
-                text = "Rocket: ${launch.rocket}",
-                style = MaterialTheme.typography.bodyMedium
-            )
+            // Mission information
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = launch.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                Text(
+                    text = launch.dateTime,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                Text(
+                    text = launch.rocketInfo,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                Text(
+                    text = launch.launchStatus.toDisplayText(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
             
-            Text(
-                text = "Date: ${launch.date}",
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Spacer(modifier = Modifier.width(16.dp))
             
-            Spacer(modifier = Modifier.height(8.dp))
-            
+            // Success/failure icon
             launch.success?.let { success ->
-                Surface(
-                    color = if (success) {
-                        MaterialTheme.colorScheme.primaryContainer
+                Icon(
+                    imageVector = if (success) Icons.Default.Check else Icons.Default.Close,
+                    contentDescription = if (success) "Mission successful" else "Mission failed",
+                    tint = if (success) {
+                        MaterialTheme.colorScheme.primary
                     } else {
-                        MaterialTheme.colorScheme.errorContainer
+                        MaterialTheme.colorScheme.error
                     },
-                    shape = MaterialTheme.shapes.small
-                ) {
-                    Text(
-                        text = if (success) "Success" else "Failed",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = if (success) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onErrorContainer
-                        }
-                    )
-                }
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
     }
+}
+
+private fun LaunchStatus.toDisplayText(): String = when (this) {
+    is LaunchStatus.DaysSinceLaunch -> "$days days since launch"
+    is LaunchStatus.DaysUntilLaunch -> "$days days to launch" 
+    LaunchStatus.LaunchingToday -> "Launching today"
 }
