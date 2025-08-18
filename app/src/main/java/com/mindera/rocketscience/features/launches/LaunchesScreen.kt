@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -28,16 +29,20 @@ fun LaunchesScreen(
     viewModel: LaunchesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("SpaceX") }
+                title = { Text("SpaceX") },
+                scrollBehavior = scrollBehavior
             )
         }
     ) { paddingValues ->
         LaunchesContent(
             uiState = uiState,
+            scrollBehavior = scrollBehavior,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -45,9 +50,11 @@ fun LaunchesScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LaunchesContent(
     uiState: LaunchesUiState,
+    scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier
 ) {
     when {
@@ -61,10 +68,52 @@ private fun LaunchesContent(
             )
         }
         else -> {
-            LaunchesList(
-                launches = uiState.launches,
-                modifier = modifier
-            )
+            LazyColumn(
+                modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                // Company section
+                uiState.company?.let { company ->
+                    item {
+                        CompanyInfo(company = company)
+                    }
+                }
+                
+                // Launches section header
+                item {
+                    Text(
+                        text = "Launches",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                    )
+                }
+                
+                // Launches items
+                items(uiState.launches) { launch ->
+                    LaunchItem(
+                        launch = launch,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                    )
+                }
+                
+                // Empty state
+                if (uiState.launches.isEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No launches available",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -99,29 +148,52 @@ private fun ErrorContent(
 }
 
 @Composable
+private fun CompanyInfo(
+    company: CompanyUiModel,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = "Company",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+        )
+        
+        Text(
+            text = "${company.name} was founded by ${company.founder} in ${company.founded}. " +
+                    "It has now ${company.employees} employees, ${company.launchSites} launch sites, " +
+                    "and is valued at USD ${company.formattedValuation}.",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+    }
+}
+
+@Composable
 private fun LaunchesList(
     launches: List<LaunchUiModel>,
     modifier: Modifier = Modifier
 ) {
-    if (launches.isEmpty()) {
-        Box(
-            modifier = modifier,
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "No launches available",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-    } else {
-        Column(modifier = modifier) {
-            Text(
-                text = "Launches",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
-            )
-            
+    Column(modifier = modifier) {
+        Text(
+            text = "Launches",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+        )
+        
+        if (launches.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No launches available",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        } else {
             LazyColumn(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)

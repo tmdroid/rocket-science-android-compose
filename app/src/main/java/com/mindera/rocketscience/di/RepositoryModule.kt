@@ -1,5 +1,7 @@
 package com.mindera.rocketscience.di
 
+import com.mindera.rocketscience.data.repository.CompanyRepository
+import com.mindera.rocketscience.data.repository.CompanyRepositoryImpl
 import com.mindera.rocketscience.data.repository.LaunchesRepository
 import com.mindera.rocketscience.data.repository.LaunchesRepositoryImpl
 import dagger.Binds
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindLaunchesRepository(
         launchesRepositoryImpl: LaunchesRepositoryImpl
     ): LaunchesRepository
+    
+    @Binds
+    @Singleton
+    abstract fun bindCompanyRepository(
+        companyRepositoryImpl: CompanyRepositoryImpl
+    ): CompanyRepository
 }

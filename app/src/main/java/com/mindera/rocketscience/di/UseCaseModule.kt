@@ -1,6 +1,8 @@
 package com.mindera.rocketscience.di
 
+import com.mindera.rocketscience.data.repository.CompanyRepository
 import com.mindera.rocketscience.data.repository.LaunchesRepository
+import com.mindera.rocketscience.domain.usecase.GetCompanyInfoUseCase
 import com.mindera.rocketscience.domain.usecase.GetLaunchesUseCase
 import dagger.Module
 import dagger.Provides
@@ -16,4 +18,9 @@ object UseCaseModule {
     @Singleton
     fun provideGetLaunchesUseCase(launchesRepository: LaunchesRepository): GetLaunchesUseCase =
         GetLaunchesUseCase(launchesRepository)
+        
+    @Provides
+    @Singleton
+    fun provideGetCompanyInfoUseCase(companyRepository: CompanyRepository): GetCompanyInfoUseCase =
+        GetCompanyInfoUseCase(companyRepository)
 }
