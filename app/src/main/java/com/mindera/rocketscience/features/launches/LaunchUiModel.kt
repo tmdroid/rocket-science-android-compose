@@ -9,5 +9,7 @@ data class LaunchUiModel(
     val rocketInfo: String,
     val launchStatus: LaunchStatus,
     val missionPatchUrl: String?,
-    val success: Boolean?
+    val success: Boolean?,
+    val launchYear: String,
+    val launchDateUnix: Long
 )

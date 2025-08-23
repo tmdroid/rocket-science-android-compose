@@ -3,7 +3,8 @@ package com.mindera.rocketscience.domain.usecase
 import com.mindera.rocketscience.data.repository.CompanyRepository
 import com.mindera.rocketscience.domain.model.Company
 import com.mindera.rocketscience.features.launches.CompanyUiModel
-import java.text.NumberFormat
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,9 +13,11 @@ class GetCompanyInfoUseCase @Inject constructor(
     private val companyRepository: CompanyRepository
 ) {
 
-    suspend operator fun invoke(): Result<CompanyUiModel> =
-        companyRepository.getCompanyInfo()
+    operator fun invoke(): Flow<Result<CompanyUiModel>> = flow {
+        val result = companyRepository.getCompanyInfo()
             .map { company -> company.toUiModel() }
+        emit(result)
+    }
 
     private fun Company.toUiModel(): CompanyUiModel {
         val formattedValuation = formatValuation(valuation)
