@@ -70,10 +70,12 @@ dependencies {
     // Browser - Chrome Custom Tabs
     implementation libs.androidx.browser
     
-    // Testing
-    testImplementation libs.junit
-    androidTestImplementation libs.androidx.test.junit
-    androidTestImplementation libs.androidx.test.espresso.core
+    // Unit Testing
+    testImplementation libs.bundles.testing.unit
+    testRuntimeOnly libs.junit5.engine
+    
+    // Android Testing  
+    androidTestImplementation libs.bundles.testing.android
     androidTestImplementation platform(libs.androidx.compose.bom)
     androidTestImplementation libs.androidx.compose.ui.test.junit4
     

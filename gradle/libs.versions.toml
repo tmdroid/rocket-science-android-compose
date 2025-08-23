@@ -40,8 +40,14 @@ browser = "1.9.0"
 
 # Testing
 junit = "4.13.2"
+junit5 = "5.10.1"
+mockk = "1.13.8"
+kotlin-coroutines-test = "1.7.3"
 androidx-test-junit = "1.3.0"
 androidx-test-espresso-core = "3.7.0"
+androidx-test-core = "1.6.1"
+androidx-arch-core-testing = "2.2.0"
+truth = "1.1.4"
 
 [libraries]
 # AndroidX Core Libraries
@@ -89,8 +95,17 @@ androidx-browser = { group = "androidx.browser", name = "browser", version.ref =
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+junit5-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
+junit5-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5" }
+junit5-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit5" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
+kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlin-coroutines-test" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso-core" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidx-test-core" }
+androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core-testing" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -137,10 +152,27 @@ hilt = [
     "hilt-navigation-compose"
 ]
 
-testing = [
+testing-unit = [
     "junit",
+    "mockk",
+    "kotlin-coroutines-test",
+    "androidx-arch-core-testing",
+    "truth"
+]
+
+testing-junit5 = [
+    "junit5-api",
+    "junit5-params",
+    "mockk",
+    "kotlin-coroutines-test",
+    "truth"
+]
+
+testing-android = [
     "androidx-test-junit",
-    "androidx-test-espresso-core"
+    "androidx-test-espresso-core",
+    "androidx-test-core",
+    "mockk-android"
 ]
 
 debug = [
