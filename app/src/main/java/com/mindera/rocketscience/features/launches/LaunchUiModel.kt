@@ -11,5 +11,7 @@ data class LaunchUiModel(
     val missionPatchUrl: String?,
     val success: Boolean?,
     val launchYear: String,
-    val launchDateUnix: Long
+    val launchDateUnix: Long,
+    val wikipediaUrl: String?,
+    val videoUrl: String?
 )

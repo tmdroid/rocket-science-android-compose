@@ -13,5 +13,7 @@ data class Launch(
     val rocketName: String,
     val rocketType: String,
     val missionPatchUrl: String?,
-    val success: Boolean?
+    val success: Boolean?,
+    val wikipediaUrl: String?,
+    val videoUrl: String?
 )

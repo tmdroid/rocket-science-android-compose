@@ -53,7 +53,9 @@ fun LaunchEntity.toDomainModel(): Launch {
         rocketName = rocketName,
         rocketType = rocketType,
         missionPatchUrl = missionPatchSmallUrl ?: missionPatchUrl,
-        success = launchSuccess
+        success = launchSuccess,
+        wikipediaUrl = wikipediaUrl,
+        videoUrl = videoUrl
     )
 }
 

@@ -45,7 +45,9 @@ class GetLaunchesUseCase @Inject constructor(
             missionPatchUrl = missionPatchUrl,
             success = success,
             launchYear = extractYear(launchDate),
-            launchDateUnix = launchDateUnix
+            launchDateUnix = launchDateUnix,
+            wikipediaUrl = wikipediaUrl,
+            videoUrl = videoUrl
         )
     }
     
