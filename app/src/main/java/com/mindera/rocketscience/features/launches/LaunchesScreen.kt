@@ -54,6 +54,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -79,13 +80,13 @@ fun LaunchesScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("SpaceX") },
+                title = { Text(stringResource(R.string.app_title)) },
                 scrollBehavior = scrollBehavior,
                 actions = {
                     IconButton(onClick = { showFilterDialog = true }) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_filter_list_alt_24),
-                            contentDescription = "Filter launches",
+                            contentDescription = stringResource(R.string.filter_launches_content_description),
                         )
                     }
                 }
@@ -151,7 +152,7 @@ private fun LaunchesContent(
                 // Launches section header
                 item {
                     Text(
-                        text = "Launches",
+                        text = stringResource(R.string.launches_section_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
@@ -184,7 +185,7 @@ private fun LaunchesContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "No launches available",
+                                text = stringResource(R.string.no_launches_available),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }
@@ -238,7 +239,7 @@ private fun ErrorContent(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Error: $error",
+            text = stringResource(R.string.error_prefix, error),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.error
         )
@@ -252,16 +253,22 @@ private fun CompanyInfo(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "Company",
+            text = stringResource(R.string.company_section_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
         )
 
         Text(
-            text = "${company.name} was founded by ${company.founder} in ${company.founded}. " +
-                    "It has now ${company.employees} employees, ${company.launchSites} launch sites, " +
-                    "and is valued at USD ${company.formattedValuation}.",
+            text = stringResource(
+                R.string.company_description,
+                company.name,
+                company.founder,
+                company.founded,
+                company.employees,
+                company.launchSites,
+                company.formattedValuation
+            ),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
@@ -275,7 +282,7 @@ private fun LaunchesList(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "Launches",
+            text = stringResource(R.string.launches_section_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
@@ -287,7 +294,7 @@ private fun LaunchesList(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No launches available",
+                    text = stringResource(R.string.no_launches_available),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -331,7 +338,10 @@ private fun LaunchItem(
                     .data(launch.missionPatchUrl)
                     .crossfade(true)
                     .build(),
-                contentDescription = "Mission patch for ${launch.name}",
+                contentDescription = stringResource(
+                    R.string.mission_patch_content_description,
+                    launch.name
+                ),
                 modifier = Modifier
                     .size(60.dp)
                     .clip(RoundedCornerShape(8.dp)),
@@ -377,7 +387,11 @@ private fun LaunchItem(
             launch.success?.let { success ->
                 Icon(
                     imageVector = if (success) Icons.Default.Check else Icons.Default.Close,
-                    contentDescription = if (success) "Mission successful" else "Mission failed",
+                    contentDescription = if (success) {
+                        stringResource(R.string.mission_successful)
+                    } else {
+                        stringResource(R.string.mission_failed)
+                    },
                     tint = if (success) {
                         MaterialTheme.colorScheme.primary
                     } else {
@@ -416,7 +430,7 @@ private fun FilterDialog(
                     .padding(24.dp)
             ) {
                 Text(
-                    text = "Filter Launches",
+                    text = stringResource(R.string.filter_launches_title),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
@@ -424,7 +438,7 @@ private fun FilterDialog(
 
                 // Year filter
                 Text(
-                    text = "Launch Year",
+                    text = stringResource(R.string.launch_year_label),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -434,7 +448,7 @@ private fun FilterDialog(
                     onExpandedChange = { yearDropdownExpanded = it }
                 ) {
                     OutlinedTextField(
-                        value = selectedYear ?: "All Years",
+                        value = selectedYear ?: stringResource(R.string.all_years),
                         onValueChange = {},
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = yearDropdownExpanded) },
@@ -448,7 +462,7 @@ private fun FilterDialog(
                         onDismissRequest = { yearDropdownExpanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("All Years") },
+                            text = { Text(stringResource(R.string.all_years)) },
                             onClick = {
                                 selectedYear = null
                                 yearDropdownExpanded = false
@@ -470,7 +484,7 @@ private fun FilterDialog(
 
                 // Launch success filter
                 Text(
-                    text = "Launch Success",
+                    text = stringResource(R.string.launch_success_label),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -495,9 +509,9 @@ private fun FilterDialog(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = when (filter) {
-                                    LaunchSuccessFilter.ALL -> "All Launches"
-                                    LaunchSuccessFilter.SUCCESS_ONLY -> "Successful Only"
-                                    LaunchSuccessFilter.FAILED_ONLY -> "Failed Only"
+                                    LaunchSuccessFilter.ALL -> stringResource(R.string.all_launches)
+                                    LaunchSuccessFilter.SUCCESS_ONLY -> stringResource(R.string.successful_only)
+                                    LaunchSuccessFilter.FAILED_ONLY -> stringResource(R.string.failed_only)
                                 }
                             )
                         }
@@ -508,7 +522,7 @@ private fun FilterDialog(
 
                 // Sort order
                 Text(
-                    text = "Sort Order",
+                    text = stringResource(R.string.sort_order_label),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -532,8 +546,8 @@ private fun FilterDialog(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = when (order) {
-                                    SortOrder.ASC -> "Oldest First"
-                                    SortOrder.DESC -> "Newest First"
+                                    SortOrder.ASC -> stringResource(R.string.oldest_first)
+                                    SortOrder.DESC -> stringResource(R.string.newest_first)
                                 }
                             )
                         }
@@ -548,7 +562,7 @@ private fun FilterDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -562,7 +576,7 @@ private fun FilterDialog(
                             )
                         }
                     ) {
-                        Text("Apply")
+                        Text(stringResource(R.string.apply))
                     }
                 }
             }
@@ -570,10 +584,11 @@ private fun FilterDialog(
     }
 }
 
+@Composable
 private fun LaunchStatus.toDisplayText(): String = when (this) {
-    is LaunchStatus.DaysSinceLaunch -> "$days days since launch"
-    is LaunchStatus.DaysUntilLaunch -> "$days days to launch"
-    LaunchStatus.LaunchingToday -> "Launching today"
+    is LaunchStatus.DaysSinceLaunch -> stringResource(R.string.days_since_launch, days)
+    is LaunchStatus.DaysUntilLaunch -> stringResource(R.string.days_to_launch, days)
+    LaunchStatus.LaunchingToday -> stringResource(R.string.launching_today)
 }
 
 @Composable
@@ -587,25 +602,29 @@ private fun LinkChoiceDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Open Launch Details",
+                text = stringResource(R.string.open_launch_details_title),
                 style = MaterialTheme.typography.headlineSmall
             )
         },
         text = {
             Text(
-                text = "Choose how you'd like to learn more about ${launch.name}:",
+                text = stringResource(R.string.choose_link_message, launch.name),
                 style = MaterialTheme.typography.bodyMedium
             )
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         },
         confirmButton = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { onVideoSelected(launch) }) { Text("Watch Video") }
-                Button(onClick = { onWikipediaSelected(launch) }) { Text("Read Article") }
+                Button(onClick = { onVideoSelected(launch) }) {
+                    Text(stringResource(R.string.watch_video))
+                }
+                Button(onClick = { onWikipediaSelected(launch) }) {
+                    Text(stringResource(R.string.read_article))
+                }
             }
         }
     )

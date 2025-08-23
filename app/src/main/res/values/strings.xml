@@ -1,4 +1,47 @@
 <resources>
     <string name="app_name">My Application</string>
     <string name="title_activity_main">Space X</string>
+    
+    <!-- Main Screen -->
+    <string name="app_title">SpaceX</string>
+    <string name="filter_launches_content_description">Filter launches</string>
+    
+    <!-- Loading and Error States -->
+    <string name="no_launches_available">No launches available</string>
+    <string name="error_prefix">Error: %s</string>
+    
+    <!-- Company Section -->
+    <string name="company_section_title">Company</string>
+    <string name="company_description">%1$s was founded by %2$s in %3$d. It has now %4$d employees, %5$d launch sites, and is valued at USD %6$s.</string>
+    
+    <!-- Launches Section -->
+    <string name="launches_section_title">Launches</string>
+    <string name="mission_patch_content_description">Mission patch for %s</string>
+    <string name="mission_successful">Mission successful</string>
+    <string name="mission_failed">Mission failed</string>
+    
+    <!-- Launch Status -->
+    <string name="days_since_launch">%d days since launch</string>
+    <string name="days_to_launch">%d days to launch</string>
+    <string name="launching_today">Launching today</string>
+    
+    <!-- Filter Dialog -->
+    <string name="filter_launches_title">Filter Launches</string>
+    <string name="launch_year_label">Launch Year</string>
+    <string name="all_years">All Years</string>
+    <string name="launch_success_label">Launch Success</string>
+    <string name="all_launches">All Launches</string>
+    <string name="successful_only">Successful Only</string>
+    <string name="failed_only">Failed Only</string>
+    <string name="sort_order_label">Sort Order</string>
+    <string name="oldest_first">Oldest First</string>
+    <string name="newest_first">Newest First</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
+    
+    <!-- Link Choice Dialog -->
+    <string name="open_launch_details_title">Open Launch Details</string>
+    <string name="choose_link_message">Choose how you\'d like to learn more about %s:</string>
+    <string name="watch_video">Watch Video</string>
+    <string name="read_article">Read Article</string>
 </resources>
