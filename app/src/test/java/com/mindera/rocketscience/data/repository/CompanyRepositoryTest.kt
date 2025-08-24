@@ -179,4 +179,86 @@ class CompanyRepositoryTest {
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()?.message).isEqualTo(NETWORK_ERROR)
     }
+
+    @Test
+    fun `getCompanyInfo keeps stale data when network exception occurs`() = runTest {
+        // Given - stale cached data exists
+        val staleEntity = CompanyEntity(
+            name = BLUE_ORIGIN_NAME,
+            founder = JEFF_BEZOS,
+            founded = BLUE_ORIGIN_FOUNDED,
+            employees = BLUE_ORIGIN_EMPLOYEES,
+            launchSites = BLUE_ORIGIN_LAUNCH_SITES,
+            valuation = BLUE_ORIGIN_VALUATION
+        )
+        coEvery { localDataSource.getCompanyInfoSync() } returns staleEntity
+        coEvery { localDataSource.isCompanyDataStale() } returns true
+        coEvery { remoteDataSource.getCompanyInfo() } throws RuntimeException("Network timeout")
+
+        // When
+        val results = repository.getCompanyInfo().toList()
+
+        // Then - should only emit cached data, no error
+        assertThat(results).hasSize(1) 
+        val result = results[0]
+        assertThat(result.isSuccess).isTrue()
+        val company = result.getOrNull()!!
+        assertThat(company.name).isEqualTo(BLUE_ORIGIN_NAME)
+        assertThat(company.founder).isEqualTo(JEFF_BEZOS)
+        assertThat(company.valuation).isEqualTo(BLUE_ORIGIN_VALUATION)
+    }
+
+    @Test
+    fun `getCompanyInfo keeps very old cached data when remote is unavailable`() = runTest {
+        // Given - cached data that's weeks old but still available
+        val veryOldEntity = CompanyEntity(
+            name = TEST_COMPANY_NAME,
+            founder = TEST_FOUNDER,
+            founded = ZERO_VALUE,
+            employees = ZERO_VALUE,
+            launchSites = ZERO_VALUE,
+            valuation = ZERO_LONG_VALUE,
+            lastUpdated = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L) // 30 days ago
+        )
+        coEvery { localDataSource.getCompanyInfoSync() } returns veryOldEntity
+        coEvery { localDataSource.isCompanyDataStale() } returns true
+        coEvery { remoteDataSource.getCompanyInfo() } returns Result.failure(Exception("Service unavailable"))
+
+        // When
+        val results = repository.getCompanyInfo().toList()
+
+        // Then - should still show the very old cached data
+        assertThat(results).hasSize(1)
+        val result = results[0]
+        assertThat(result.isSuccess).isTrue()
+        val company = result.getOrNull()!!
+        assertThat(company.name).isEqualTo(TEST_COMPANY_NAME)
+        assertThat(company.founder).isEqualTo(TEST_FOUNDER)
+    }
+
+    @Test
+    fun `getCompanyInfo handles IOException while preserving cached data`() = runTest {
+        // Given
+        val cachedEntity = CompanyEntity(
+            name = SPACEX_NAME,
+            founder = ELON_MUSK,
+            founded = SPACEX_FOUNDED,
+            employees = SPACEX_EMPLOYEES,
+            launchSites = SPACEX_LAUNCH_SITES,
+            valuation = SPACEX_VALUATION
+        )
+        coEvery { localDataSource.getCompanyInfoSync() } returns cachedEntity
+        coEvery { localDataSource.isCompanyDataStale() } returns true
+        coEvery { remoteDataSource.getCompanyInfo() } throws java.io.IOException("No internet connection")
+
+        // When
+        val results = repository.getCompanyInfo().toList()
+
+        // Then - should preserve cached data despite IOException
+        assertThat(results).hasSize(1)
+        val result = results[0]
+        assertThat(result.isSuccess).isTrue()
+        val company = result.getOrNull()!!
+        assertThat(company.name).isEqualTo(SPACEX_NAME)
+    }
 }

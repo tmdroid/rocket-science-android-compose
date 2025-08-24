@@ -25,7 +25,7 @@ class LaunchesRepositoryImpl @Inject constructor(
 
     override fun getLaunches(): Flow<Result<List<Launch>>> = flow {
         try {
-            // First emit cached data
+            // First emit cached data (offline-first approach)
             localDataSource.getAllLaunches().collect { cachedLaunches ->
                 if (cachedLaunches.isNotEmpty()) {
                     emit(Result.success(cachedLaunches.map { it.toDomainModel() }))
@@ -33,23 +33,33 @@ class LaunchesRepositoryImpl @Inject constructor(
 
                 // Check if data is stale and refresh if needed
                 if (localDataSource.isDataStale()) {
-                    val refreshResult = refreshFromRemote()
-                    if (refreshResult.isSuccess) {
-                        // Emit fresh data after refresh
-                        emitAll(
-                            localDataSource.getAllLaunches().map { freshLaunches ->
-                                Result.success(freshLaunches.map { it.toDomainModel() })
-                            }
-                        )
-                    } else {
-                        // If refresh failed but we have cached data, keep showing cached data
-                        if (cachedLaunches.isEmpty()) {
-                            emit(
-                                Result.failure(
-                                    refreshResult.exceptionOrNull() ?: Exception("Unknown error")
-                                )
+                    try {
+                        val refreshResult = refreshFromRemote()
+                        if (refreshResult.isSuccess) {
+                            // Emit fresh data after refresh
+                            emitAll(
+                                localDataSource.getAllLaunches().map { freshLaunches ->
+                                    Result.success(freshLaunches.map { it.toDomainModel() })
+                                }
                             )
+                        } else {
+                            // If refresh failed but we have cached data, keep using cached data
+                            // Only emit error if we have no cached data at all
+                            if (cachedLaunches.isEmpty()) {
+                                emit(
+                                    Result.failure(
+                                        refreshResult.exceptionOrNull() ?: Exception("No data available")
+                                    )
+                                )
+                            }
                         }
+                    } catch (networkException: Exception) {
+                        // Network exception occurred - keep cached data if available
+                        if (cachedLaunches.isEmpty()) {
+                            // Only emit error if no cached data exists
+                            emit(Result.failure(networkException))
+                        }
+                        // If cached data exists, we already emitted it above, so do nothing
                     }
                 }
             }
@@ -69,13 +79,16 @@ class LaunchesRepositoryImpl @Inject constructor(
                     ?.map { launchDto -> launchDto.toEntity() }
                     ?: emptyList()
 
+                // Replace data atomically
                 localDataSource.deleteAllLaunches()
                 localDataSource.insertLaunches(launchEntities)
                 Result.success(Unit)
             } catch (exception: Exception) {
+                // If we fail to update, keep existing cached data
                 Result.failure(exception)
             }
         } else {
+            // Network error - keep existing cached data
             Result.failure(remoteResult.exceptionOrNull() ?: Exception("Failed to fetch launches"))
         }
     }
