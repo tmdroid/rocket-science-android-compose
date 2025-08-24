@@ -42,10 +42,10 @@ browser = "1.9.0"
 junit = "4.13.2"
 junit5 = "5.10.1"
 mockk = "1.13.8"
-kotlin-coroutines-test = "1.7.3"
+kotlin-coroutines-test = "1.8.1"
 androidx-test-junit = "1.3.0"
 androidx-test-espresso-core = "3.7.0"
-androidx-test-core = "1.6.1"
+androidx-test-core = "1.7.0"
 androidx-arch-core-testing = "2.2.0"
 truth = "1.1.4"
 
@@ -130,11 +130,6 @@ androidx-compose = [
     "androidx-compose-material3"
 ]
 
-androidx-lifecycle = [
-    "androidx-lifecycle-runtime-ktx",
-    "androidx-lifecycle-viewmodel-compose"
-]
-
 networking = [
     "retrofit",
     "retrofit-kotlinx-serialization",
@@ -160,13 +155,6 @@ testing-unit = [
     "truth"
 ]
 
-testing-junit5 = [
-    "junit5-api",
-    "junit5-params",
-    "mockk",
-    "kotlin-coroutines-test",
-    "truth"
-]
 
 testing-android = [
     "androidx-test-junit",

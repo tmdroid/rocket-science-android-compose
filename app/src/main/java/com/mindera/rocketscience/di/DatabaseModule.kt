@@ -26,7 +26,7 @@ object DatabaseModule {
         ).apply {
             // For development - recreate DB on schema change
             if (BuildUtils.isDebugBuild(context)) {
-                fallbackToDestructiveMigration()
+                fallbackToDestructiveMigration(true)
             }
         }.build()
 

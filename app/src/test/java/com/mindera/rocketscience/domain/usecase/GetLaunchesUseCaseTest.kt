@@ -14,8 +14,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 
 class GetLaunchesUseCaseTest {
 
@@ -25,7 +23,7 @@ class GetLaunchesUseCaseTest {
     // Test data
     private val currentUnixTime = System.currentTimeMillis() / 1000
     private val oneDayInSeconds = 24 * 60 * 60
-    
+
     private val launch2020 = Launch(
         id = "1",
         missionName = "Mission 2020",
@@ -41,7 +39,7 @@ class GetLaunchesUseCaseTest {
     )
 
     private val launch2021 = Launch(
-        id = "2", 
+        id = "2",
         missionName = "Mission 2021",
         launchDate = "Mar 20, 2021",
         launchTime = "14:45",
@@ -56,7 +54,7 @@ class GetLaunchesUseCaseTest {
 
     private val launch2022 = Launch(
         id = "3",
-        missionName = "Mission 2022", 
+        missionName = "Mission 2022",
         launchDate = "Dec 05, 2022",
         launchTime = "08:15",
         launchDateUnix = currentUnixTime - (30 * oneDayInSeconds), // 30 days ago
@@ -102,7 +100,7 @@ class GetLaunchesUseCaseTest {
         assertThat(result.isSuccess).isTrue()
         val launches = result.getOrNull()!!
         assertThat(launches).hasSize(4)
-        
+
         // Should be sorted by newest first (DESC)
         assertThat(launches[0].id).isEqualTo("4") // Future launch (highest unix time)
         assertThat(launches[1].id).isEqualTo("3") // 2022 launch
@@ -122,7 +120,7 @@ class GetLaunchesUseCaseTest {
         // Then
         assertThat(result.isSuccess).isTrue()
         val launches = result.getOrNull()!!
-        
+
         // Should be sorted by oldest first (ASC)
         assertThat(launches[0].id).isEqualTo("1") // 2020 launch (lowest unix time)
         assertThat(launches[1].id).isEqualTo("2") // 2021 launch
@@ -189,7 +187,7 @@ class GetLaunchesUseCaseTest {
             launch2021.copy(id = "6", success = false) // another failed 2021 launch
         )
         every { repository.getLaunches() } returns flowOf(Result.success(extraLaunches))
-        
+
         val filterState = LaunchFilterState(
             selectedYear = "2021",
             launchSuccess = LaunchSuccessFilter.SUCCESS_ONLY,
@@ -248,7 +246,7 @@ class GetLaunchesUseCaseTest {
         // Then
         assertThat(result.isSuccess).isTrue()
         val launches = result.getOrNull()!!
-        
+
         // Check past launches have DaysSinceLaunch status
         val pastLaunches = launches.filter { it.launchDateUnix < currentUnixTime }
         pastLaunches.forEach { launch ->
@@ -256,7 +254,7 @@ class GetLaunchesUseCaseTest {
             val status = launch.launchStatus as LaunchStatus.DaysSinceLaunch
             assertThat(status.days).isGreaterThan(0)
         }
-        
+
         // Check future launches have DaysUntilLaunch status
         val futureLaunches = launches.filter { it.launchDateUnix > currentUnixTime }
         futureLaunches.forEach { launch ->
@@ -277,7 +275,7 @@ class GetLaunchesUseCaseTest {
         // Then
         assertThat(result.isSuccess).isTrue()
         val launch = result.getOrNull()!!.first()
-        
+
         assertThat(launch.id).isEqualTo("1")
         assertThat(launch.name).isEqualTo("Mission 2020")
         assertThat(launch.dateTime).isEqualTo("Jan 15, 2020 at 10:30")
