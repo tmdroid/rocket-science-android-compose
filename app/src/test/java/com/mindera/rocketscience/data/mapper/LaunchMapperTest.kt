@@ -14,6 +14,143 @@ import java.util.Locale
 
 class LaunchMapperTest {
 
+    companion object {
+        // Flight numbers
+        private const val FLIGHT_1 = 1
+        private const val FLIGHT_2 = 2
+        private const val FLIGHT_3 = 3
+        private const val FLIGHT_4 = 4
+        private const val FLIGHT_5 = 5
+        private const val FLIGHT_6 = 6
+        private const val FLIGHT_7 = 7
+        private const val FLIGHT_8 = 8
+        private const val FLIGHT_9 = 9
+
+        // Mission names
+        private const val TEST_MISSION = "Test Mission"
+        private const val MINIMAL_MISSION = "Minimal Mission"
+        private const val NO_PAYLOAD_MISSION = "No Payload Mission"
+        private const val DATETIME_TEST_MISSION = "DateTime Test"
+        private const val ALT_FORMAT_TEST_MISSION = "Alternative Format Test"
+        private const val MALFORMED_DATE_TEST_MISSION = "Malformed Date Test"
+        private const val MULTI_CUSTOMER_MISSION = "Multi Customer Mission"
+        private const val UNKNOWN_SUCCESS_MISSION = "Unknown Success Mission"
+        private const val MORNING_LAUNCH_MISSION = "Morning Launch"
+        private const val MULTI_PAYLOAD_MISSION = "Multi Payload Mission"
+        private const val MISSION_WITH_REGULAR_PATCH = "Mission with regular patch"
+
+        // Years
+        private const val YEAR_2020 = "2020"
+        private const val YEAR_2021 = "2021"
+        private const val YEAR_2022 = "2022"
+        private const val YEAR_2023 = "2023"
+        private const val YEAR_2024 = "2024"
+        private const val YEAR_2025 = "2025"
+
+        // Unix timestamps
+        private const val UNIX_2020_JAN_15 = 1579082400L
+        private const val UNIX_2021_MAR_20 = 1616249100L
+        private const val UNIX_2022_JAN_01 = 1640995200L
+        private const val UNIX_2023_JAN_01 = 1672531200L
+        private const val UNIX_2024_JAN_01 = 1704067200L
+        private const val UNIX_2025_JAN_01 = 1735689600L
+
+        // UTC date strings
+        private const val UTC_2020_JAN_15 = "2020-01-15T10:30:00.000Z"
+        private const val UTC_2021_MAR_20 = "2021-03-20T14:45:00.000Z"
+        private const val UTC_2022_JAN_01 = "2022-01-01T00:00:00.000Z"
+        private const val UTC_2023_JAN_01_NO_MS = "2023-01-01T00:00:00Z"
+        private const val UTC_2025_JAN_01 = "2025-01-01T00:00:00.000Z"
+        private const val UTC_MORNING_LAUNCH = "2020-01-15T06:15:30.123Z"
+        private const val INVALID_DATE_FORMAT = "invalid-date-format"
+
+        // Local date strings
+        private const val LOCAL_2020_JAN_15 = "2020-01-15T10:30:00-05:00"
+        private const val LOCAL_2021_MAR_20 = "2021-03-20T14:45:00-05:00"
+        private const val LOCAL_2021_DEC_31 = "2021-12-31T19:00:00-05:00"
+        private const val LOCAL_2022_DEC_31 = "2022-12-31T19:00:00-05:00"
+        private const val LOCAL_2024_JAN_01 = "2024-01-01T00:00:00-05:00"
+        private const val LOCAL_2024_DEC_31 = "2024-12-31T19:00:00-05:00"
+        private const val LOCAL_MORNING_LAUNCH = "2020-01-15T01:15:30-05:00"
+
+        // Rocket IDs and names
+        private const val FALCON9_ID = "falcon9"
+        private const val FALCON9_NAME = "Falcon 9"
+        private const val FALCON_HEAVY_ID = "falconheavy"
+        private const val FALCON_HEAVY_NAME = "Falcon Heavy"
+        private const val STARSHIP_ID = "starship"
+        private const val STARSHIP_NAME = "Starship"
+
+        // Rocket types
+        private const val ROCKET_TYPE_FT = "FT"
+        private const val ROCKET_TYPE_FH = "FH"
+        private const val ROCKET_TYPE_SN = "SN"
+        private const val ROCKET_TYPE_BLOCK5 = "Block 5"
+
+        // Launch sites
+        private const val KSC_SITE_ID = "ksc_lc_39a"
+        private const val KSC_SITE_NAME = "KSC LC 39A"
+        private const val KSC_SITE_LONG = "Kennedy Space Center Historic Launch Complex 39A"
+        private const val VAFB_SITE_ID = "vafb_slc_4e"
+        private const val VAFB_SITE_NAME = "VAFB SLC 4E"
+        private const val VAFB_SITE_LONG = "Vandenberg Air Force Base Space Launch Complex 4E"
+        private const val STARBASE_SITE_ID = "stls"
+        private const val STARBASE_SITE_NAME = "Starbase"
+        private const val STARBASE_SITE_LONG = "SpaceX Starbase"
+
+        // URLs
+        private const val PATCH_URL = "https://example.com/patch.png"
+        private const val PATCH_SMALL_URL = "https://example.com/patch_small.png"
+        private const val ARTICLE_URL = "https://example.com/article"
+        private const val VIDEO_URL = "https://youtube.com/watch"
+        private const val WIKIPEDIA_URL = "https://wikipedia.com/mission"
+
+        // Payload data
+        private const val PAYLOAD_ID_1 = "payload1"
+        private const val PAYLOAD_TYPE_SATELLITE = "Satellite"
+        private const val PAYLOAD_MASS_5000 = 5000.0
+        private const val ORBIT_LEO = "LEO"
+        private const val ORBIT_GTO = "GTO"
+        private const val CUSTOMERS_NASA_SPACEX = "[\"NASA\",\"SpaceX\"]"
+
+        // Mission details
+        private const val TEST_MISSION_DETAILS = "Test mission details"
+        private const val FUTURE_TEST_MISSION = "Future test mission"
+
+        // Customers arrays
+        private val NASA_SPACEX_CUSTOMERS = listOf("NASA", "SpaceX")
+        private val MULTI_CUSTOMERS = listOf("NASA", "ESA", "JAXA", "Commercial Operator")
+        private val PRIMARY_CUSTOMER = listOf("Primary Customer")
+        private val SECONDARY_CUSTOMER = listOf("Secondary Customer")
+
+        // Complex payload data
+        private const val MULTI_SATELLITE_TYPE = "Multi-Satellite Deployment"
+        private const val PAYLOAD_MASS_15000_5 = 15000.5
+        private const val CUSTOMERS_MULTI = "[\"NASA\",\"ESA\",\"JAXA\",\"Commercial Operator\"]"
+
+        // Primary/Secondary payloads
+        private const val PRIMARY_PAYLOAD_ID = "primary"
+        private const val SECONDARY_PAYLOAD_ID = "secondary"
+        private const val PRIMARY_SATELLITE_TYPE = "Primary Satellite"
+        private const val SECONDARY_SATELLITE_TYPE = "Secondary Satellite"
+        private const val PAYLOAD_MASS_3000 = 3000.0
+        private const val PAYLOAD_MASS_1000 = 1000.0
+        private const val CUSTOMERS_PRIMARY = "[\"Primary Customer\"]"
+
+        // Expected formatted dates
+        private const val FORMATTED_JAN_15_2020 = "Jan 15, 2020"
+        private const val FORMATTED_JAN_01_2022 = "Jan 01, 2022"
+        private const val FORMATTED_JAN_01_2023 = "Jan 01, 2023"
+        private const val FORMATTED_TIME_10_30 = "10:30"
+        private const val FORMATTED_TIME_00_00 = "00:00"
+        private const val FORMATTED_TIME_06_15 = "06:15"
+        private const val EMPTY_TIME = ""
+
+        // Expected IDs
+        private const val EXPECTED_ID_1 = "1"
+        private const val EXPECTED_ID_7 = "7"
+    }
+
     @Before
     fun setUp() {
         Locale.setDefault(Locale.US)

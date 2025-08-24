@@ -16,9 +16,9 @@ class LocalDataSource @Inject constructor(
     
     suspend fun deleteAllLaunches() = launchDao.deleteAllLaunches()
     
-    suspend fun getLaunchCount(): Int = launchDao.getLaunchCount()
+    private suspend fun getLaunchCount(): Int = launchDao.getLaunchCount()
     
-    suspend fun getStaleEntries(timestamp: Long): List<LaunchEntity> = launchDao.getStaleEntries(timestamp)
+    private suspend fun getStaleEntries(timestamp: Long): List<LaunchEntity> = launchDao.getStaleEntries(timestamp)
     
     suspend fun isDataStale(): Boolean {
         val oneDayAgo = System.currentTimeMillis() - ONE_DAY_IN_MILLIS

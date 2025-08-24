@@ -11,17 +11,40 @@ import org.junit.Test
 
 class CompanyRepositoryTest {
 
+    companion object {
+        private const val SPACEX_NAME = "SpaceX"
+        private const val ELON_MUSK = "Elon Musk"
+        private const val SPACEX_FOUNDED = 2002
+        private const val SPACEX_EMPLOYEES = 12000
+        private const val SPACEX_LAUNCH_SITES = 3
+        private const val SPACEX_VALUATION = 180_000_000_000L
+        
+        private const val BLUE_ORIGIN_NAME = "Blue Origin"
+        private const val JEFF_BEZOS = "Jeff Bezos"
+        private const val BLUE_ORIGIN_FOUNDED = 2000
+        private const val BLUE_ORIGIN_EMPLOYEES = 10000
+        private const val BLUE_ORIGIN_LAUNCH_SITES = 1
+        private const val BLUE_ORIGIN_VALUATION = 50_000_000_000L
+        
+        private const val TEST_COMPANY_NAME = "Test Company"
+        private const val TEST_FOUNDER = "Test Founder"
+        private const val ZERO_VALUE = 0
+        private const val ZERO_LONG_VALUE = 0L
+        
+        private const val NETWORK_ERROR = "Network connection failed"
+    }
+
     private lateinit var remoteDataSource: CompanyRemoteDataSource
     private lateinit var repository: CompanyRepository
 
     // Test data
     private val companyDto = CompanyDto(
-        name = "SpaceX",
-        founder = "Elon Musk",
-        founded = 2002,
-        employees = 12000,
-        launchSites = 3,
-        valuation = 180_000_000_000L
+        name = SPACEX_NAME,
+        founder = ELON_MUSK,
+        founded = SPACEX_FOUNDED,
+        employees = SPACEX_EMPLOYEES,
+        launchSites = SPACEX_LAUNCH_SITES,
+        valuation = SPACEX_VALUATION
     )
 
     @Before
@@ -42,18 +65,18 @@ class CompanyRepositoryTest {
         assertThat(result.isSuccess).isTrue()
         val company = result.getOrNull()!!
         
-        assertThat(company.name).isEqualTo("SpaceX")
-        assertThat(company.founder).isEqualTo("Elon Musk")
-        assertThat(company.founded).isEqualTo(2002)
-        assertThat(company.employees).isEqualTo(12000)
-        assertThat(company.launchSites).isEqualTo(3)
-        assertThat(company.valuation).isEqualTo(180_000_000_000L)
+        assertThat(company.name).isEqualTo(SPACEX_NAME)
+        assertThat(company.founder).isEqualTo(ELON_MUSK)
+        assertThat(company.founded).isEqualTo(SPACEX_FOUNDED)
+        assertThat(company.employees).isEqualTo(SPACEX_EMPLOYEES)
+        assertThat(company.launchSites).isEqualTo(SPACEX_LAUNCH_SITES)
+        assertThat(company.valuation).isEqualTo(SPACEX_VALUATION)
     }
 
     @Test
     fun `getCompanyInfo propagates remote data source failure`() = runTest {
         // Given
-        val errorMessage = "Network connection failed"
+        val errorMessage = NETWORK_ERROR
         coEvery { remoteDataSource.getCompanyInfo() } returns Result.failure(Exception(errorMessage))
 
         // When
@@ -68,12 +91,12 @@ class CompanyRepositoryTest {
     fun `getCompanyInfo handles mapping of different company data`() = runTest {
         // Given
         val differentCompany = CompanyDto(
-            name = "Blue Origin",
-            founder = "Jeff Bezos",
-            founded = 2000,
-            employees = 10000,
-            launchSites = 1,
-            valuation = 50_000_000_000L
+            name = BLUE_ORIGIN_NAME,
+            founder = JEFF_BEZOS,
+            founded = BLUE_ORIGIN_FOUNDED,
+            employees = BLUE_ORIGIN_EMPLOYEES,
+            launchSites = BLUE_ORIGIN_LAUNCH_SITES,
+            valuation = BLUE_ORIGIN_VALUATION
         )
         coEvery { remoteDataSource.getCompanyInfo() } returns Result.success(differentCompany)
 
@@ -84,24 +107,24 @@ class CompanyRepositoryTest {
         assertThat(result.isSuccess).isTrue()
         val company = result.getOrNull()!!
         
-        assertThat(company.name).isEqualTo("Blue Origin")
-        assertThat(company.founder).isEqualTo("Jeff Bezos")
-        assertThat(company.founded).isEqualTo(2000)
-        assertThat(company.employees).isEqualTo(10000)
-        assertThat(company.launchSites).isEqualTo(1)
-        assertThat(company.valuation).isEqualTo(50_000_000_000L)
+        assertThat(company.name).isEqualTo(BLUE_ORIGIN_NAME)
+        assertThat(company.founder).isEqualTo(JEFF_BEZOS)
+        assertThat(company.founded).isEqualTo(BLUE_ORIGIN_FOUNDED)
+        assertThat(company.employees).isEqualTo(BLUE_ORIGIN_EMPLOYEES)
+        assertThat(company.launchSites).isEqualTo(BLUE_ORIGIN_LAUNCH_SITES)
+        assertThat(company.valuation).isEqualTo(BLUE_ORIGIN_VALUATION)
     }
 
     @Test
     fun `getCompanyInfo handles zero and negative values correctly`() = runTest {
         // Given
         val companyWithZeros = CompanyDto(
-            name = "Test Company",
-            founder = "Test Founder",
-            founded = 0,
-            employees = 0,
-            launchSites = 0,
-            valuation = 0L
+            name = TEST_COMPANY_NAME,
+            founder = TEST_FOUNDER,
+            founded = ZERO_VALUE,
+            employees = ZERO_VALUE,
+            launchSites = ZERO_VALUE,
+            valuation = ZERO_LONG_VALUE
         )
         coEvery { remoteDataSource.getCompanyInfo() } returns Result.success(companyWithZeros)
 
@@ -112,9 +135,9 @@ class CompanyRepositoryTest {
         assertThat(result.isSuccess).isTrue()
         val company = result.getOrNull()!!
         
-        assertThat(company.founded).isEqualTo(0)
-        assertThat(company.employees).isEqualTo(0)
-        assertThat(company.launchSites).isEqualTo(0)
-        assertThat(company.valuation).isEqualTo(0L)
+        assertThat(company.founded).isEqualTo(ZERO_VALUE)
+        assertThat(company.employees).isEqualTo(ZERO_VALUE)
+        assertThat(company.launchSites).isEqualTo(ZERO_VALUE)
+        assertThat(company.valuation).isEqualTo(ZERO_LONG_VALUE)
     }
 }
