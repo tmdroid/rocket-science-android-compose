@@ -4,7 +4,7 @@ import com.mindera.rocketscience.data.repository.CompanyRepository
 import com.mindera.rocketscience.domain.model.Company
 import com.mindera.rocketscience.features.launches.CompanyUiModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,11 +13,11 @@ class GetCompanyInfoUseCase @Inject constructor(
     private val companyRepository: CompanyRepository
 ) {
 
-    operator fun invoke(): Flow<Result<CompanyUiModel>> = flow {
-        val result = companyRepository.getCompanyInfo()
-            .map { company -> company.toUiModel() }
-        emit(result)
-    }
+    operator fun invoke(): Flow<Result<CompanyUiModel>> =
+        companyRepository.getCompanyInfo()
+            .map { result ->
+                result.map { company -> company.toUiModel() }
+            }
 
     private fun Company.toUiModel(): CompanyUiModel {
         val formattedValuation = formatValuation(valuation)

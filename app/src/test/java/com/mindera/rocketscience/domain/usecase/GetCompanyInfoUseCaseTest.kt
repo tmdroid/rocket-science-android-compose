@@ -3,9 +3,10 @@ package com.mindera.rocketscience.domain.usecase
 import com.google.common.truth.Truth.assertThat
 import com.mindera.rocketscience.data.repository.CompanyRepository
 import com.mindera.rocketscience.domain.model.Company
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -36,7 +37,7 @@ class GetCompanyInfoUseCaseTest {
     @Test
     fun `invoke returns successful company info with formatted valuation in billions`() = runTest {
         // Given
-        coEvery { repository.getCompanyInfo() } returns Result.success(company)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(company))
 
         // When
         val result = useCase().first()
@@ -57,7 +58,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke formats valuation in millions correctly`() = runTest {
         // Given
         val companyWithMillions = company.copy(valuation = 850_000_000L) // 850 million
-        coEvery { repository.getCompanyInfo() } returns Result.success(companyWithMillions)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(companyWithMillions))
 
         // When
         val result = useCase().first()
@@ -72,7 +73,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke formats valuation in thousands correctly`() = runTest {
         // Given
         val companyWithThousands = company.copy(valuation = 500_000L) // 500 thousand
-        coEvery { repository.getCompanyInfo() } returns Result.success(companyWithThousands)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(companyWithThousands))
 
         // When
         val result = useCase().first()
@@ -87,7 +88,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke formats small valuation as plain number`() = runTest {
         // Given
         val companyWithSmallValue = company.copy(valuation = 999L) // Less than 1000
-        coEvery { repository.getCompanyInfo() } returns Result.success(companyWithSmallValue)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(companyWithSmallValue))
 
         // When
         val result = useCase().first()
@@ -102,7 +103,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke formats decimal billions correctly`() = runTest {
         // Given
         val companyWithDecimalBillions = company.copy(valuation = 1_250_000_000L) // 1.25 billion
-        coEvery { repository.getCompanyInfo() } returns Result.success(companyWithDecimalBillions)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(companyWithDecimalBillions))
 
         // When
         val result = useCase().first()
@@ -117,7 +118,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke formats decimal millions correctly`() = runTest {
         // Given
         val companyWithDecimalMillions = company.copy(valuation = 37_500_000L) // 37.5 million
-        coEvery { repository.getCompanyInfo() } returns Result.success(companyWithDecimalMillions)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(companyWithDecimalMillions))
 
         // When
         val result = useCase().first()
@@ -132,7 +133,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke propagates repository failure`() = runTest {
         // Given
         val errorMessage = "Network connection failed"
-        coEvery { repository.getCompanyInfo() } returns Result.failure(Exception(errorMessage))
+        every { repository.getCompanyInfo() } returns flowOf(Result.failure(Exception(errorMessage)))
 
         // When
         val result = useCase().first()
@@ -146,7 +147,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke handles zero valuation correctly`() = runTest {
         // Given
         val companyWithZeroValuation = company.copy(valuation = 0L)
-        coEvery { repository.getCompanyInfo() } returns Result.success(companyWithZeroValuation)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(companyWithZeroValuation))
 
         // When
         val result = useCase().first()
@@ -161,7 +162,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke handles exactly 1 billion valuation correctly`() = runTest {
         // Given
         val companyWith1Billion = company.copy(valuation = 1_000_000_000L)
-        coEvery { repository.getCompanyInfo() } returns Result.success(companyWith1Billion)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(companyWith1Billion))
 
         // When
         val result = useCase().first()
@@ -176,7 +177,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke handles exactly 1 million valuation correctly`() = runTest {
         // Given
         val companyWith1Million = company.copy(valuation = 1_000_000L)
-        coEvery { repository.getCompanyInfo() } returns Result.success(companyWith1Million)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(companyWith1Million))
 
         // When
         val result = useCase().first()
@@ -191,7 +192,7 @@ class GetCompanyInfoUseCaseTest {
     fun `invoke handles exactly 1 thousand valuation correctly`() = runTest {
         // Given
         val companyWith1Thousand = company.copy(valuation = 1_000L)
-        coEvery { repository.getCompanyInfo() } returns Result.success(companyWith1Thousand)
+        every { repository.getCompanyInfo() } returns flowOf(Result.success(companyWith1Thousand))
 
         // When
         val result = useCase().first()

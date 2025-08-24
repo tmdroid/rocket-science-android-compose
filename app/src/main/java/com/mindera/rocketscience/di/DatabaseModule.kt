@@ -2,6 +2,7 @@ package com.mindera.rocketscience.di
 
 import android.content.Context
 import androidx.room.Room
+import com.mindera.rocketscience.data.local.dao.CompanyDao
 import com.mindera.rocketscience.data.local.dao.LaunchDao
 import com.mindera.rocketscience.data.local.database.RocketScienceDatabase
 import com.mindera.rocketscience.util.BuildUtils
@@ -32,4 +33,7 @@ object DatabaseModule {
 
     @Provides
     fun provideLaunchDao(database: RocketScienceDatabase): LaunchDao = database.launchDao()
+    
+    @Provides
+    fun provideCompanyDao(database: RocketScienceDatabase): CompanyDao = database.companyDao()
 }
