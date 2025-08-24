@@ -7,7 +7,6 @@ import com.mindera.rocketscience.data.remote.datasource.CompanyRemoteDataSource
 import com.mindera.rocketscience.domain.model.Company
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,17 +30,17 @@ class CompanyRepositoryImpl @Inject constructor(
 
         // Try to refresh data from remote if cache is stale or doesn't exist
         val shouldRefresh = cachedCompany == null || localDataSource.isCompanyDataStale()
-        
+
         if (shouldRefresh) {
             try {
                 val remoteResult = remoteDataSource.getCompanyInfo()
                 if (remoteResult.isSuccess) {
                     val companyDto = remoteResult.getOrThrow()
                     val companyEntity = companyDto.toEntity()
-                    
+
                     // Cache the new data
                     localDataSource.insertCompany(companyEntity)
-                    
+
                     // Emit the fresh data
                     emit(Result.success(companyDto.toDomainModel()))
                 } else {

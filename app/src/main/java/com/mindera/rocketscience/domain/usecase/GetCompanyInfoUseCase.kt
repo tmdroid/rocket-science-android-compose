@@ -5,6 +5,7 @@ import com.mindera.rocketscience.domain.model.Company
 import com.mindera.rocketscience.features.launches.CompanyUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,17 +37,17 @@ class GetCompanyInfoUseCase @Inject constructor(
         return when {
             value >= 1_000_000_000 -> {
                 val billions = value / 1_000_000_000.0
-                String.format("%.1f billion", billions)
+                String.format(Locale.US, "%.1f billion", billions)
             }
 
             value >= 1_000_000 -> {
                 val millions = value / 1_000_000.0
-                String.format("%.1f million", millions)
+                String.format(Locale.US, "%.1f million", millions)
             }
 
             value >= 1_000 -> {
                 val thousands = value / 1_000.0
-                String.format("%.1f thousand", thousands)
+                String.format(Locale.US, "%.1f thousand", thousands)
             }
 
             else -> value.toString()
